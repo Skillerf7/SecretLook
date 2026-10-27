@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Secret Lock</string>
+    <string name="accessibility_label">Secret Lock Sperre</string>
+    <string name="accessibility_description">Secret Lock nutzt diesen Dienst ausschließlich, um zu erkennen, welche App im Vordergrund geöffnet wird, und eine Sperrseite anzuzeigen, wenn diese App in Ihrer selbst eingestellten Sperrzeit gesperrt ist. Es werden keine Bildschirminhalte gelesen, keine Eingaben mitgeschnitten und keine Daten übertragen.</string>
+</resources>
