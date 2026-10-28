@@ -1,0 +1,4 @@
+Auf dem Handy:
+1. Zip in Download entpacken (Ordner SecretLock-3)
+2. Termux:  cd /storage/emulated/0/Download/SecretLock-3 && bash fix-upload.sh
+Der Workflow liegt zusaetzlich sichtbar in workflow-kopie/build-apk.yml.

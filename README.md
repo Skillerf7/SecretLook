@@ -4,11 +4,11 @@ Native Android-App (Kotlin, Jetpack Compose) für das **Samsung Galaxy S20 FE 5G
 Sie sperrt von dir ausgewählte Apps nach einem frei einstellbaren Zeitplan und gibt sie danach automatisch frei.
 Alles läuft lokal: keine Cloud, keine Werbung, keine Analyse-SDKs, kein Datenbackup.
 
-> **Stand dieser Lieferung (ehrlich):** Der Quellcode ist vollständig und der Gradle-Wrapper (inkl. `gradle-wrapper.jar`,
-> `gradlew` / `gradlew.bat`) ist enthalten. In der Erstellungsumgebung war **kein Android SDK** vorhanden
-> (`ANDROID_HOME` / `sdk.dir` fehlen), daher konnte **kein Compile und keine APK** erzeugt werden.
-> Unit-Tests wurden **nicht ausgeführt** (benötigen den Android-Gradle-Plugin-Auflösungspfad).
-> Die App wurde **nicht auf einem Gerät getestet**. Siehe „Teststatus“.
+> **Stand dieser Lieferung (ehrlich):** Quellcode und Gradle-Wrapper sind vollständig.
+> Es gibt einen GitHub-Actions-Workflow (`.github/workflows/build-apk.yml`), der auf `main`
+> Unit-Tests und `assembleDebug` ausführt und die Debug-APK als Artefakt **secretlock-debug-apk** hochlädt.
+> In der lokalen Erstellungsumgebung konnte wegen begrenztem RAM kein vollständiger Build
+> abgeschlossen werden. Die App wurde **nicht auf einem Gerät getestet**.
 
 ## Bauen und installieren
 
@@ -19,6 +19,18 @@ Voraussetzung: Android Studio (Koala oder neuer) mit JDK 17 und installiertem An
 3. Run ▶ (Variante `debug`) oder per Konsole `./gradlew assembleDebug` → `app/build/outputs/apk/debug/app-debug.apk`, dann `adb install -r app/build/outputs/apk/debug/app-debug.apk`.
 
 Der Wrapper ist vollständig (`gradle/wrapper/gradle-wrapper.jar` + Skripte). Ohne Android SDK schlägt der Build mit „SDK location not found“ fehl – das ist erwartetes Verhalten.
+
+## CI: Debug-APK per GitHub Actions
+
+Workflow: `.github/workflows/build-apk.yml`
+
+- Startet bei Push auf `main` und manuell (`workflow_dispatch`).
+- JDK 17, Android SDK Platform 34 + Build-Tools 34.0.0, vorhandener Gradle-Wrapper.
+- Ablauf: `./gradlew testDebugUnitTest` → `./gradlew assembleDebug`.
+- Artefakt-Name: **secretlock-debug-apk** (`app/build/outputs/apk/debug/*.apk`).
+- Bei Fehler: Artefakt `test-and-build-reports`.
+
+Nach dem Commit der Workflow-Datei: Actions-Tab → Lauf öffnen → Artefakte herunterladen.
 
 ## Einrichtung auf dem Handy
 
