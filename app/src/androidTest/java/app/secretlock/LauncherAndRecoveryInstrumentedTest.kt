@@ -35,6 +35,19 @@ class LauncherAndRecoveryInstrumentedTest {
         assertNotNull(ctx.packageManager.resolveActivity(Intent(ctx, MainActivity::class.java), 0))
     }
 
+    @Test fun mainActivityIsNeverDisabledByHiding() {
+        LauncherVisibility.setHiddenUnchecked(ctx, true)
+        val d = LauncherVisibility.diagnose(ctx)
+        assertTrue(d.mainActivityResolvable)
+        assertFalse(d.mainActivityState == "deaktiviert")
+        assertEquals(0, d.launcherEntries)
+    }
+
+    @Test fun showKeepsExactlyOneLauncherEntry() {
+        LauncherVisibility.show(ctx)
+        assertEquals(1, LauncherVisibility.diagnose(ctx).launcherEntries)
+    }
+
     @Test fun hidingIsRefusedWithoutRecoveryWay() {
         Store.get(ctx).confirmedWays().forEach { Store.get(ctx).setWayConfirmed(it, false) }
         assertTrue(LauncherVisibility.hide(ctx).isNotEmpty())

@@ -510,6 +510,9 @@ fun ActivateScreen(perms: PermissionStatus, rules: List<Rule>, tick: Int, onBack
     var hidden by remember(tick) { mutableStateOf(LauncherVisibility.isHidden(ctx)) }
     var confirm by remember { mutableStateOf(false) }
     var refused by remember { mutableStateOf<List<String>>(emptyList()) }
+    var diagNonce by remember { mutableIntStateOf(0) }
+    var settingsOpened by remember { mutableStateOf<Boolean?>(null) }
+    val diag = remember(hidden, diagNonce) { LauncherVisibility.diagnose(ctx) }
     val enabledCount = rules.count { it.enabled }
     val blockers = HidePolicy.blockers(perms.accessibilityEnabled, enabledCount, ways)
 
@@ -572,10 +575,47 @@ fun ActivateScreen(perms: PermissionStatus, rules: List<Rule>, tick: Int, onBack
                 }
             }
             item {
+                SectionCard {
+                    Text("Alternative: Samsung-eigenes Ausblenden", fontWeight = FontWeight.SemiBold)
+                    Text(
+                        "Hier bleibt der Launcher-Eintrag von Secret Lock AKTIV; One UI Home blendet das Symbol selbst auf " +
+                            "Home- und Apps-Bildschirm aus. So bleibt ein gültiger Startweg für die Samsung-Suche erhalten. " +
+                            "Ob die Suche die App danach noch findet, ist nicht belegt (Berichte widersprechen sich) – bitte ausprobieren.",
+                        color = Pal.Dim, fontSize = 13.sp,
+                    )
+                    Text(
+                        "Schritte: Startbildschirm lang drücken → Einstellungen → „Apps auf Start- und Apps-Bildschirm ausblenden“ " +
+                            "(Bezeichnung je nach One-UI-Version leicht anders) → Secret Lock auswählen.",
+                        color = Pal.Dim, fontSize = 12.sp,
+                    )
+                    OutlinedButton(onClick = {
+                        if (LauncherVisibility.isHidden(ctx)) { LauncherVisibility.show(ctx); hidden = false }
+                        settingsOpened = LauncherVisibility.openHomeSettings(ctx)
+                        diagNonce++
+                    }) { Text("Launcher-Eintrag aktivieren, Einstellungen öffnen") }
+                    if (settingsOpened == false) Text(
+                        "Die Launcher-Einstellungen ließen sich nicht direkt öffnen; es wurden die allgemeinen Einstellungen geöffnet.",
+                        color = Pal.Warn, fontSize = 12.sp,
+                    )
+                }
+            }
+            item {
+                SectionCard {
+                    Text("Diagnose Startwege", fontWeight = FontWeight.SemiBold)
+                    Text("Launcher-Alias: ${diag.aliasState}", fontSize = 13.sp)
+                    Text("Verwaltungs-Activity: ${diag.mainActivityState}", fontSize = 13.sp)
+                    Text("Verwaltung startbar: ${if (diag.mainActivityResolvable) "ja" else "NEIN"}", fontSize = 13.sp)
+                    Text("Launcher-Einträge der App: ${diag.launcherEntries}", fontSize = 13.sp)
+                    OutlinedButton(onClick = { diagNonce++ }) { Text("Neu prüfen") }
+                }
+            }
+            item {
                 Text(
-                    "Hinweis: Ausgeblendet wird nur der Launcher-Eintrag. Ob Secret Lock danach in der Suche deines Launchers " +
-                        "(Samsung Finder) noch erscheint, hängt vom Launcher ab und ist nicht garantiert. Die App bleibt in " +
-                        "Einstellungen → Apps sichtbar und lässt sich jederzeit deinstallieren.",
+                    "Hinweis: „Aktivieren und Symbol ausblenden“ deaktiviert nur den Launcher-Alias; die Verwaltungs-Activity " +
+                        "bleibt aktiv. Ein Treffer in der Samsung-Suche, der noch auf den abgeschalteten Alias zeigt, lässt sich " +
+                        "aber nicht öffnen (Android kann eine deaktivierte Komponente nicht starten). Ob One UI 5.1 die Suche " +
+                        "ohne Launcher-Eintrag aufbaut, ist nicht belegt. Öffnen geht dann über Bedienungshilfen-Einstellungen, " +
+                        "Schnelleinstellungs-Kachel oder den Telefon-Code. Die App bleibt in Einstellungen → Apps sichtbar.",
                     color = Pal.Dim, fontSize = 12.sp,
                 )
             }
@@ -584,7 +624,7 @@ fun ActivateScreen(perms: PermissionStatus, rules: List<Rule>, tick: Int, onBack
     if (confirm) AlertDialog(
         onDismissRequest = { confirm = false },
         title = { Text("Symbol ausblenden?") },
-        text = { Text("Secret Lock verschwindet aus dem App-Drawer. Zeitpläne laufen weiter. Zurück kommst du über die bestätigten Wiederherstellungswege.") },
+        text = { Text("Der Launcher-Eintrag wird abgeschaltet; Secret Lock verschwindet aus dem App-Drawer und vermutlich auch aus der Samsung-Suche (nicht garantiert). Zeitpläne und Einstellungen bleiben unverändert. Zurück kommst du über die bestätigten Wiederherstellungswege.") },
         confirmButton = {
             TextButton(onClick = { refused = LauncherVisibility.hide(ctx); hidden = LauncherVisibility.isHidden(ctx); confirm = false }) { Text("Ausblenden") }
         },
@@ -623,7 +663,7 @@ fun HelpScreen(onBack: () -> Unit) {
                         "• Die Sperre ist eine Annäherung: Wer die Bedienungshilfe abschaltet, Secret Lock deinstalliert oder das Gerät zurücksetzt, hebt sie auf.\n" +
                             "• Beim Schalten der Uhr nach einem Neustart kann die Sperre nicht sicher erkannt werden.\n" +
                             "• Eine schon geöffnete App wird erst beim nächsten Fenster-Wechsel erkannt, wenn der Dienst frisch gestartet wurde.\n" +
-                            "• Auffindbarkeit in der Suche bei ausgeblendetem Symbol ist launcherabhängig.\n" +
+                            "• Auffindbarkeit in der Samsung-Suche bei ausgeblendetem Symbol ist nicht garantiert (siehe Aktivieren → Alternative).\n" +
                             "• Notfall-Aufhebung: Verwalten → „Notfall-Aufhebung“ (60 s Wartezeit + Bestätigungswort).",
                         color = Pal.Dim, fontSize = 13.sp,
                     )

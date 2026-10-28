@@ -11,9 +11,20 @@ android {
         applicationId = "app.secretlock"
         minSdk = 26
         targetSdk = 33            // Zielgerät: Galaxy S20 FE 5G mit Android 13
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // Fester Debug-Schlüssel (kein Geheimnis): Der GitHub-Runner würde sonst bei jedem Build einen neuen
+    // zufälligen Schlüssel erzeugen, und Updates ließen sich nicht über die installierte App spielen.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
     }
 
     buildTypes {

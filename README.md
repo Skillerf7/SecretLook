@@ -91,7 +91,7 @@ Es werden keine Zugangsdaten, App-Nutzungsdaten oder persönlichen Daten gespeic
 ## Bekannte Grenzen
 
 - Das ist eine **Annäherung**, keine systemweite Kontrolle: Wer die Bedienungshilfe ausschaltet, die App deinstalliert, sie „Beenden erzwingt“ oder das Gerät zurücksetzt, hebt die Sperre auf.
-- **Auffindbarkeit in der Suche bei ausgeblendetem Symbol ist launcherabhängig** und kann auf One UI fehlen. Das ist nicht geprüft. Verlass dich auf die Wiederherstellungswege.
+- **Auffindbarkeit in der Samsung-Suche bei ausgeblendetem Symbol ist nicht garantiert.** „Aktivieren und Symbol ausblenden“ schaltet nur den Launcher-Alias ab (die Verwaltungs-Activity bleibt aktiv). Ein Suchtreffer, der noch auf den abgeschalteten Alias zeigt, lässt sich nicht öffnen. Alternative: Launcher-Eintrag aktiv lassen und in One UI unter Home-Einstellungen → „Apps ausblenden“ verstecken (Suchverhalten danach: nicht belegt, bitte testen). Verlass dich auf die Wiederherstellungswege.
 - Uhrzeit: Verstellen der Uhr **innerhalb eines Boots** wird erkannt und verkürzt die Sperre nicht. Ein Vorstellen der Uhr **und anschließender Neustart** ist technisch nicht erkennbar; „Automatische Uhrzeit“ aktiv lassen (die App warnt, wenn sie aus ist).
 - Eine bereits geöffnete Ziel-App wird erkannt, sobald der Dienst ein Fenster-Ereignis dieser App gesehen hat; direkt nach frischem Dienststart/Boot greift die Sperre erst beim nächsten Fenster-Wechsel.
 - Hintergrundaudio/PiP einer Ziel-App kann je nach App kurz weiterlaufen; Home wird beim Sperren ausgelöst.
@@ -106,7 +106,7 @@ Es werden keine Zugangsdaten, App-Nutzungsdaten oder persönlichen Daten gespeic
 | Uhr vor-/zurückstellen, Neustart | `ClockGuardTest` | **geschrieben, nicht ausgeführt** |
 | Speichern/Laden, Wiederherstellung nach Neustart, defekte Daten | `RuleJsonTest` | **geschrieben, nicht ausgeführt** |
 | Fehlende Berechtigungen (nie „aktiv“ behaupten), Ausblend-Voraussetzungen | `EnforcementTest` | **geschrieben, nicht ausgeführt** |
-| Launcher-Eintrag aus-/einblenden, Verwaltung bei ausgeblendetem Symbol erreichbar, Ausblenden ohne Wiederherstellungsweg verweigert | `androidTest/…InstrumentedTest` | **nicht getestet** (braucht Gerät) |
+| Launcher-Eintrag aus-/einblenden, Verwaltungs-Activity nie deaktiviert, Verwaltung bei ausgeblendetem Symbol erreichbar, Ausblenden ohne Wiederherstellungsweg verweigert | `androidTest/…InstrumentedTest` | **nicht getestet** (braucht Gerät) |
 | Sperre auf dem S20 FE, Boot-Wiederherstellung, Doze, Wiederherstellungswege, Suche | – | **nicht getestet** (nur manuell auf dem Gerät möglich) |
 
 Ausführen (mit Android SDK): `./gradlew testDebugUnitTest` (JVM-Unit-Tests) bzw. `./gradlew connectedDebugAndroidTest` (Gerät).
